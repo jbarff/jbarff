@@ -1,0 +1,58 @@
+# INICIO DE CARGA DE ARCHIVO EXCEL
+> X05_Customer_Analytics_2 <- read_excel("05-Customer Analytics_2.xlsx", sheet = "bank-full")
+
+# ASIGNACION DE VARIABLE
+> FruitBox <- X05_Customer_Analytics_2
+>dim(FruitBox)
+
+# MUETRA PREVIA DE LA VARIABLE FruitBox
+>head(FruitBox)
+
+# Resumen del data frame
+>summary(FruitBox) 
+
+# Histograma de rango de edades
+>hist(x = FruitBox$EDAD, main = "Histograma de Edad", xlab = "Edad", ylab = "Frecuencia", col = "purple", breaks = seq(18,98,3))
+
+# Tamaño de Caja
+>plot(x = as.factor(FruitBox$TAM_CAJA),xlab ="Tipos de Cajas", ylab="Unidades", main="Grafico de Cantidades de Cajas", col="Purple")
+
+# Canales de Venta
+>plot(x = as.factor(FruitBox$CANAL),xlab ="Tipos de Canales", ylab="Frecuencia", main="Grafico de Canales de Venta", col="Purple")
+
+# Frecuencia de compras
+>plot(x = as.factor(FruitBox$FRECUENCIA_COMPRA),xlab ="Tipos de Compras", ylab="Frecuencia", main="Grafico de Frecuencia de Compras", col="Purple")
+
+# Clientes Antiguos
+>library(readxl)
+>X05_Customer_Analytics_2 <- read_excel("05-Customer Analytics_2.xlsx", sheet = "bank-full")
+>View(X05_Customer_Analytics_2)
+>FruitBox <- X05_Customer_Analytics_2
+>FruitBox_año_min <- min(FruitBox$AÑO)
+>FruitBox_año_min <- filter(FruitBox, FruitBox$AÑO==FruitBox_año_min)
+>FruitBox_mes_min <- min(FruitBox_año_min$MES)
+>FruitBox_mes_min <- filter(FruitBox_año_min, FruitBox_año_min$MES==FruitBox_mes_min)
+>FruitBox_dia_min <- min(FruitBox_mes_min$DIA)
+>FruitCantiguo <- filter(FruitBox_mes_min, FruitBox_mes_min$DIA==FruitBox_dia_min)
+>plot (x = as.factor(FruitCantiguo$CLIENTE), col="purple")
+
+# Facturacion de clientes
+>library(readr)
+>library(data.table)
+>library(reshape2)
+>X05_Customer_Analytics_3 <- read_excel("05-Customer Analytics_3.xlsx", sheet = "REGISTROS")
+>FruitBox_Cliente <- X05_Customer_Analytics_3
+>FruitBox_Cliente <- data.frame(FruitBox_Cliente, ones=rep(NA,45211))
+>FruitBox_Cliente$ones <- rep(1)
+>Cliente_Facturacion <- dcast(FruitBox_Cliente, CLIENTE~ones, sum, value.var = "FACTURADO")
+>names(Cliente_Facturacion) <- c("Clientes","Total de Facturación")
+>plot (x= as.factor(Cliente_Facturacion$Clientes), y = Cliente_Facturacion$`Total de Facturación`/1000, xlab="CLIENTES", ylab="Facturacion en miles de euros", main="Facturación desde 2019 al 2021")
+
+# Promedio de Facturacion
+>Cliente_Facturacion <- dcast(FruitBox_Cliente, CLIENTE~ones, mean, value.var = "FACTURADO")
+>names(Cliente_Facturacion) <- c("Clientes","Total de Facturación")
+>plot (x= as.factor(Cliente_Facturacion$Clientes), y = Cliente_Facturacion$`Total de Facturación`, xlab="CLIENTES", ylab="Facturacion en euros", main="Promedio de Facturación desde 2019 al 2021")
+
+# FACTURACION DESDE 2019 AL 2021 MAYOR A 3’000,000.00 €
+>Facturacion_mayor_a_3MM <- filter(Cliente_Facturacion, Cliente_Facturacion$`Total de Facturación`>3000000)
+>plot (x= as.factor(Facturacion_mayor_a_3MM$Clientes), y = Facturacion_mayor_a_3MM$`Total de Facturación`/1000, xlab="CLIENTES", ylab="Facturacion en euros", main="Facturación desde 2019 al 2021 mayor a 3,000 euros en miles")
